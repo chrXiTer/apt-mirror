@@ -95,6 +95,9 @@ use File::Path qw(make_path);
 use File::Basename;
 use Fcntl qw(:flock);
 
+use File::Spec;
+use Data::Dumper;
+
 my $config_file;
 
 my %config_variables = (
@@ -131,8 +134,11 @@ my %clean_directory = ();
 
 ######################################################################################
 ## Setting up $config_file variable
+my $path_curf = File::Spec->rel2abs(__FILE__);
+my ($vol, $dirs, $file) = File::Spec->splitpath($path_curf);
+print "C Dir = ", $dirs,"\n";
 
-$config_file = "/etc/apt/mirror.list";    # Default value
+$config_file = "$dirs/mirror.list";    # Default value
 if ( $_ = shift )
 {
     die("apt-mirror: invalid config file specified") unless -e $_;
@@ -350,7 +356,7 @@ while (<CONFIG>)
     die("apt-mirror: invalid line in config file ($.: $line ...)");
 }
 close CONFIG;
-
+print "_cx_ Parse config complete.", Dumper(\%config_variables);
 die("Please explicitly specify 'defaultarch' in mirror.list") unless get_variable("defaultarch");
 
 ######################################################################################
